@@ -43,4 +43,11 @@ export class EmployeesService {
       message: "Employee deleted"
     }
   }
+
+  update(id: string, updateEmployeeDto: CreateEmployeeDto) {
+    return this.employeeRepository.save({
+      employeeId: id,
+      ...updateEmployeeDto
+    })
+  } 
 }
