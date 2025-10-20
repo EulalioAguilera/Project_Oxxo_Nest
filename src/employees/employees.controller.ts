@@ -2,18 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, UseIn
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {v4 as uuid} from "uuid";
-import multer from 'multer';
-
-const storage = multer.diskStorage({
-  destination: './src/employees/employees-photos',
-  filename: (req, file, cb) => {
-    const generatedFilename = uuid();
-    cb(null, generatedFilename);
-  }
-});
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
 @Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
@@ -23,11 +14,24 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto);
   }
 
-  @Post("upload")
-  @UseInterceptors(FileInterceptor('file'))
-  uploadPhoto(@UploadedFile() file: Express.Multer.File) {
+ @Post('upload')
+  async uploadPhoto(@Body() body: any) {
+    const file = body.file;
+
+    // Check if the file exists
+    if (!file) {
+      throw new Error('No file provided');
+    }
+
+    // Move the file to the desired location
+    const destination = './uploads/' + file.name;
+    const writeStream = fs.createWriteStream(destination);
+    writeStream.write(file.data);
+    writeStream.end();
+
     return "OK";
   }
+
 
   @Get('/:id')
   findOne(
