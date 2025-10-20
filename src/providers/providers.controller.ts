@@ -12,23 +12,26 @@ export class ProvidersController {
     return this.providersService.create(createProviderDto);
   }
 
-  @Get()
+  @Get(":name")
+  findByName(@Param('name') name: string) {
+    return this.providersService.findOneByName(name);
+  }
   findAll() {
     return this.providersService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.providersService.findOne(+id);
+    return this.providersService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProviderDto: UpdateProviderDto) {
-    return this.providersService.update(+id, updateProviderDto);
+    return this.providersService.update(id, updateProviderDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.providersService.remove(+id);
+    return this.providersService.remove(id);
   }
 }
