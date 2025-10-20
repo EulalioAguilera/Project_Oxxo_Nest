@@ -10,6 +10,13 @@ export class Employee {
   employeeLastName: string;
   @Column('text')
   employeePhoneNumber: string;
-  @Column('text')
-  email: string;
+  @Column('text', {
+    unique: true
+  })
+  employeeEmail: string;
+  @Column({
+    type: 'text',
+    nullable: true
+  })
+  employeePhoto: string;
 }
