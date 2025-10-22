@@ -1,5 +1,5 @@
 import { IsEmail, IsIn, IsOptional, IsString, MinLength } from "class-validator";
-import { User } from "../entities/auth.entity";
+import { User } from "../entities/user.entity";
 
 export class CreateUserDto extends User {
   @IsEmail()

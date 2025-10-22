@@ -1,50 +1,55 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/auth.entity';
+import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
-  // Registro de usuario
+  // Registrar usuario
   async registerUser(createUserDto: CreateUserDto) {
-    // Hashear contraseña antes de guardar
-    const hashedPassword = await bcrypt.hash(createUserDto.userPassword, 5);
-    createUserDto.userPassword = hashedPassword;
-
-    return this.userRepository.save(createUserDto);
+    // Hashear la contraseña antes de guardar
+    createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 5);
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
   }
 
-  // Login de usuario
-  async loginUser(createUserDto: CreateUserDto) {
+  // Login usuario
+  async loginUser(loginUserDto: LoginUserDto) {
+    // Buscar usuario por email
     const user = await this.userRepository.findOne({
-      where: { userEmail: createUserDto.userEmail },
+      where: { userEmail: loginUserDto.userEmail },
     });
 
-    // Verificar si el usuario existe
+    // Si no existe, lanzar error
     if (!user) {
-      throw new UnauthorizedException('No estás autorizado');
+      throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    // Comparar la contraseña
-    const match = await bcrypt.compare(createUserDto.userPassword, user.userPassword);
+    // Comparar contraseña
+    const match = await bcrypt.compare(loginUserDto.userPassword, user.userPassword);
     if (!match) {
-      throw new UnauthorizedException('No estás autorizado');
+      throw new UnauthorizedException('Contraseña incorrecta');
     }
 
-    // Crear JWT seguro
-    const payload = { userId: user.userId, email: user.userEmail }; // payload mínimo
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'SECRET_KEY', {
-      expiresIn: '1h',
-    });
+    // Payload del token (no incluir contraseña)
+    const payload = {
+      userId: user.userId,
+      userEmail: user.userEmail,
+      userRoles: user.userRoles,
+    };
 
-    return { access_token: token };
+    // Firmar JWT
+    const token = this.jwtService.sign(payload);
+    return { token };
   }
 }
