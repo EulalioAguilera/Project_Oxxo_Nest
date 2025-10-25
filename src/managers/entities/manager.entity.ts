@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/auth/entities/user.entity";
 
 @Entity()
 export class Manager {
@@ -14,4 +15,8 @@ export class Manager {
   managerEmail: string;
   @Column('text')
   managerPhoneNumber: string;
+
+  @OneToOne(() => User, (user) => user.manager)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }
