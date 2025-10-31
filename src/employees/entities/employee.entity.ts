@@ -1,6 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Location } from "src/locations/entities/location.entity";
 import { User } from "src/auth/entities/user.entity";
+import { Location } from "src/locations/entities/location.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Employee {
@@ -20,13 +20,17 @@ export class Employee {
     type: 'text',
     nullable: true
   })
-  employeePhoto: string;
+  emplyeePhoto: string;
 
   @ManyToOne(() => Location, (location) => location.employees)
-  @JoinColumn({ name: 'locationId' })
+  @JoinColumn({
+    name: "locationId"
+  })
   location: Location;
 
-  @OneToOne(() => User, (user) => user.employee)
-  @JoinColumn({ name: 'userId' })
+  @OneToOne(() => User)
+  @JoinColumn({
+    name: "userId"
+  })
   user: User;
 }

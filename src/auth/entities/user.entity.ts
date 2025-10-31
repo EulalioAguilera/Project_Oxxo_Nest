@@ -1,12 +1,14 @@
-import { Employee } from "src/employees/entities/employee.entity";
 import { Manager } from "src/managers/entities/manager.entity";
+import { Employee } from "src/employees/entities/employee.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
 
 @Entity()
 export class User{
   @PrimaryGeneratedColumn('uuid')
   userId: string;
-  @Column('text')
+  @Column('text', {
+    unique: true,
+  })
   userEmail: string;
   @Column('text')
   userPassword: string;
@@ -15,13 +17,13 @@ export class User{
   })
   userRoles: string[];
 
-@OneToOne(() => Manager, {
-  eager: true
-})
-manager: Manager;
+  @OneToOne(() => Manager, {
+    eager: true
+  })
+  manager: Manager;
 
-@OneToOne(() => Employee, {
-  eager: true
-})
-employee: Employee;
+  @OneToOne(() => Employee, {
+    eager: true
+  })
+  employee: Employee;
 }
