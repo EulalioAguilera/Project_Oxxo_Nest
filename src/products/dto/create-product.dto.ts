@@ -6,14 +6,14 @@ export class CreateProductDto extends Product {
   @IsString()
   @IsUUID("4")
   @IsOptional()
-  productId: string = "";
+  productId: string = '';
   @IsString()
   @MaxLength(40)
-  productName: string = "";
+  productName: string = '';
   @IsNumber()
   price: number = 0;
   @IsInt()
   countSeal: number = 0;
-  @IsString()
-  provider: Provider | string = "";
+  @IsObject()
+  provider: Provider  = new Provider();
 }
