@@ -1,36 +1,31 @@
-import { User } from "src/auth/entities/user.entity";
-import { Location } from "src/locations/entities/location.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Location } from 'src/locations/entities/location.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity()
 export class Employee {
+  @ApiProperty({ example: 'UUID' })
   @PrimaryGeneratedColumn('uuid')
   employeeId: string;
-  @Column('text')
+
+  @ApiProperty({ example: 'Karlo' })
+  @Column({ length: 30 })
   employeeName: string;
-  @Column('text')
+
+  @ApiProperty({ example: 'Paz' })
+  @Column({ length: 70 })
   employeeLastName: string;
-  @Column('text')
+
+  @ApiProperty({ example: '4421388410' })
+  @Column({ length: 10 })
   employeePhoneNumber: string;
-  @Column('text', {
-    unique: true
-  })
+
+  @ApiProperty({ example: 'karlo@email.com' })
+  @Column({ unique: true })
   employeeEmail: string;
-  @Column({
-    type: 'text',
-    nullable: true
-  })
-  emplyeePhoto: string;
 
-  @ManyToOne(() => Location, (location) => location.employees)
-  @JoinColumn({
-    name: "locationId"
-  })
-  location: Location;
-
-  @OneToOne(() => User)
-  @JoinColumn({
-    name: "userId"
-  })
-  user: User;
+  @ApiPropertyOptional({ type: () => Location })
+  @ManyToOne(() => Location, (location) => location.employees, { nullable: true })
+  @JoinColumn({ name: 'locationId' })
+  location?: Location;
 }
